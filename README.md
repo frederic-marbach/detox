@@ -1,0 +1,2 @@
+# detox
+LaTeX sanitizer
