@@ -31,12 +31,12 @@ function findNextBeginOrEnd(line, startIndex) {
 }
 
 /**
- * Parses out "\begin{...}" or "\end{...}" (plus any immediate [blah])
+ * Parses out "\begin{...}" or "\end{...}" (plus any immediate [...] or {...} parameters)
  * from a line, given a known position of the token. Returns:
  *    {
  *       type: 'begin' | 'end',
  *       env: 'environmentName',
- *       bracket: '[optionalStuff]' or ''  (only if type === 'begin')
+ *       bracket: '[optionalStuff]{params}...' or ''  (only if type === 'begin')
  *       length: total length of the piece we parsed
  *    }
  * So that the caller knows how many characters we consumed.
@@ -66,18 +66,42 @@ function parseBeginOrEnd(line, pos, token) {
     let consumedLength = closeBrace - pos + 1; // length of "\begin{...}" or "\end{...}"
     let bracketContent = '';
 
-    // If this was a \begin, we check if there's an immediate bracket "[...]" right after
+    // If this was a \begin, we check if there are immediate parameters after
     if (isBegin) {
-        // skip any spaces after the '}', though typically it should be right away
         let afterClose = closeBrace + 1;
-        // If there's immediately a '[', parse everything up to the matching ']'
-        if (line[afterClose] === '[') {
-            // find the closing ']'
-            const closingBracket = line.indexOf(']', afterClose + 1);
-            if (closingBracket !== -1) {
-                // bracketContent: everything from '[' up to ']'
-                bracketContent = line.substring(afterClose, closingBracket + 1); // e.g. "[Some text]"
-                consumedLength += (bracketContent.length);
+        
+        // Parse any immediate parameters (both brackets and braces)
+        while (afterClose < line.length) {
+            const char = line[afterClose];
+            
+            if (char === '[') {
+                // Handle bracket parameters [...]
+                const closingBracket = line.indexOf(']', afterClose + 1);
+                if (closingBracket !== -1) {
+                    const paramContent = line.substring(afterClose, closingBracket + 1);
+                    bracketContent += paramContent;
+                    consumedLength += paramContent.length;
+                    afterClose = closingBracket + 1;
+                } else {
+                    break;
+                }
+            } else if (char === '{') {
+                // Handle brace parameters {...}
+                const closingBrace = line.indexOf('}', afterClose + 1);
+                if (closingBrace !== -1) {
+                    const paramContent = line.substring(afterClose, closingBrace + 1);
+                    bracketContent += paramContent;
+                    consumedLength += paramContent.length;
+                    afterClose = closingBrace + 1;
+                } else {
+                    break;
+                }
+            } else if (/\s/.test(char)) {
+                // Skip all whitespace (spaces, tabs, newlines, etc.)
+                afterClose++;
+            } else {
+                // Any other character, stop parsing parameters
+                break;
             }
         }
     }
@@ -98,7 +122,7 @@ function parseBeginOrEnd(line, pos, token) {
  */
 function autoIndent(source) {
     // We will tokenize into objects of the form:
-    //   { type: 'begin', env: 'something', bracket: '[...]' | '' }
+    //   { type: 'begin', env: 'something', bracket: '[...]{...}...' | '' }
     //   { type: 'end',   env: 'something' }
     //   { type: 'text',  content: 'arbitrary text' }
     //   { type: 'newline' }
