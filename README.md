@@ -23,20 +23,25 @@ Automatically indent LaTeX code for better readability, handling:
 
 ## Usage
 
-1. **Open the Tool**: Open `index.html` in your web browser
-2. **Upload File**: Select your LaTeX (.tex) file using the file picker
-3. **Configure Options**: 
+1. **Open the tool**: Open `index.html` in your web browser
+2. **Provide LaTeX source**: 
+   - **Option 1**: Upload your LaTeX (.tex) file using the file picker
+   - **Option 2**: Paste your LaTeX source directly into the textarea
+3. **Configure options**: 
    - Choose your preferred display equation format
    - Select equation reference style
    - Enable auto-indentation if desired
-4. **Transform**: Click "Transform LaTeX" to process your file
-5. **Download**: Download the sanitized file as `sanitized.tex`
+4. **Transform**: Click "Transform LaTeX" to process your source
+5. **Get results**: 
+   - View the transformed LaTeX in the output textarea
+   - **Download**: Save the sanitized file as `sanitized.tex`
+   - **Copy**: Copy the transformed LaTeX to your clipboard for pasting elsewhere
 
 ## Technical Details
 
 - **Frontend**: Pure HTML/CSS/JavaScript with Bootstrap 5 for styling
-- **File Processing**: Client-side file reading and processing (no server required)
-- **LaTeX Parsing**: Custom parsers for handling nested environments and bracket matching
+- **File processing**: Client-side file reading and processing (no server required)
+- **LaTeX parsing**: Custom parsers for handling nested environments and bracket matching
 
 ## Getting Started
 

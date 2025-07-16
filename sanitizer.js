@@ -1,41 +1,44 @@
-// We'll keep two global variables to store the file text.
-let originalText = '';
+// We'll keep a global variable to store the clean LaTeX.
 let transformedText = '';
 
 // References to HTML elements
-const fileInput    = document.getElementById('fileInput');
-const fileStatus   = document.getElementById('fileStatus');
-const sanitizeBtn  = document.getElementById('sanitizeBtn');
-const transformMsg = document.getElementById('transformMsg');
-const downloadBtn  = document.getElementById('downloadBtn');
+const fileInput      = document.getElementById('fileInput');
+const sourceTextarea = document.getElementById('sourceTextarea');
+const sanitizeBtn    = document.getElementById('sanitizeBtn');
+const transformMsg   = document.getElementById('transformMsg');
+const downloadBtn    = document.getElementById('downloadBtn');
+const copyBtn        = document.getElementById('copyBtn');
+const copyMsg        = document.getElementById('copyMsg');
 
 // ---------------------------
-// 1. FILE READING
+// 1. FILE READING AND SOURCE MANAGEMENT
 // ---------------------------
+
 fileInput.addEventListener('change', function() {
   const file = fileInput.files[0];
   if (!file) {
-    fileStatus.textContent = 'No file loaded.';
     return;
   }
   const reader = new FileReader();
-  reader.onload = function(e) {
-    originalText = e.target.result;
-    fileStatus.textContent = 'File loaded: ' + file.name;
+  reader.onload = function (e) {
+    sourceTextarea.value = e.target.result;
   };
   reader.readAsText(file, 'UTF-8');
 });
 
 // Button to run the transform
 sanitizeBtn.addEventListener('click', () => {
-  if (!originalText) {
-    alert('Please upload a .tex file first.');
+  // Get the current source text (either from file or textarea)
+  const currentSource = sourceTextarea.value.trim();
+  
+  if (!currentSource) {
+    alert('Please provide LaTeX source by uploading a file or pasting text in the text area.');
     return;
   }
 
   // First, the equation reference transformation.
   const eqOption = document.querySelector('input[name="replaceOption"]:checked').value;
-  let text = originalText;
+  let text = currentSource;
   if (eqOption === 'eqToParen') {
     text = window.Latex.transformEqToParenRef(text);
   } else if (eqOption === 'parenToEq') {
@@ -63,14 +66,16 @@ sanitizeBtn.addEventListener('click', () => {
   }
 
   transformedText = text;
-  transformMsg.classList.remove('hidden');
+  transformMsg.classList.remove('d-none');
   transformMsg.textContent = 'Transformation complete!';
   downloadBtn.classList.remove('hidden');
+  copyBtn.classList.remove('hidden');
 });
 
 // ---------------------------
-// 3. DOWNLOAD
+// 3. DOWNLOAD AND CLIPBOARD
 // ---------------------------
+
 downloadBtn.addEventListener('click', () => {
   const blob = new Blob([transformedText], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
@@ -79,4 +84,12 @@ downloadBtn.addEventListener('click', () => {
   a.download = 'sanitized.tex';
   a.click();
   URL.revokeObjectURL(url);
+});
+
+copyBtn.addEventListener('click', async () => {
+  await navigator.clipboard.writeText(transformedText);
+  copyMsg.classList.remove('d-none');
+  copyMsg.textContent = 'Copied to clipboard!';
+  // Hide the success message after 2 seconds
+  setTimeout(() => { copyMsg.classList.add('d-none'); }, 2000);
 });

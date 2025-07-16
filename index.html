@@ -20,12 +20,15 @@
 
   <!-- File Upload Section -->
   <div class="card p-3 mb-3">
-    <h2 class="mb-3">1. Upload your source file</h2>
+    <h2 class="mb-3">1. Provide your LaTeX source</h2>
     <div class="mb-3">
-      <label for="fileInput" class="form-label">Source LaTeX file to sanitize</label>
+      <label for="fileInput" class="form-label">Option 1: Upload LaTeX file</label>
       <input class="form-control" type="file" id="fileInput">
     </div>
-    <p id="fileStatus">No file loaded.</p>
+    <div class="mb-3">
+      <label for="sourceTextarea" class="form-label">Option 2: Paste LaTeX source directly</label>
+      <textarea class="form-control" id="sourceTextarea" rows="10" placeholder="Paste your LaTeX code here or load a file above..."></textarea>
+    </div>
   </div>
 
   <!-- Options Section -->
@@ -83,8 +86,12 @@
 
   <!-- Download Section -->
   <div class="card p-3 mb-3">
-    <h2 class="mb-3">3. Download transformed file</h2>
-    <button id="downloadBtn" class="btn btn-primary hidden">Download</button>
+    <h2 class="mb-3">3. Get your transformed LaTeX</h2>
+    <div class="d-flex gap-2">
+      <button id="downloadBtn" class="btn btn-primary hidden">Download as file</button>
+      <button id="copyBtn" class="btn btn-secondary hidden">Copy to clipboard</button>
+    </div>
+    <p id="copyMsg" class="mt-2 text-success d-none">Copied to clipboard!</p>
   </div>
 
 </div>
