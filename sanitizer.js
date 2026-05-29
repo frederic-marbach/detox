@@ -59,6 +59,16 @@ sanitizeBtn.addEventListener('click', () => {
     // For "none", do nothing.
   }
   
+  // Apply inline equation transformation if requested
+  const inlineOption = document.querySelector('input[name="inlineOption"]:checked').value;
+  if (inlineOption === 'toDollar') {
+    text = window.Latex.transformInline(text, '$', '$');
+  } else if (inlineOption === 'toParen') {
+    text = window.Latex.transformInline(text, '\\(', '\\)');
+  } else if (inlineOption === 'toMath') {
+    text = window.Latex.transformInline(text, '\\begin{math}', '\\end{math}');
+  }
+
   // Apply indentation if requested
   const indentOption = document.querySelector('input[name="indentOption"]:checked').value;
   if (indentOption === 'autoIndent') {

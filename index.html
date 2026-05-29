@@ -53,6 +53,25 @@
         <label class="form-check-label" for="optionDisplayNone">Leave as is</label>
       </div>
     </div>
+    <p class="fw-bold">Regarding inline equations:</p>
+    <div class="mb-3">
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="inlineOption" id="optionInlineDollar" value="toDollar">
+        <label class="form-check-label" for="optionInlineDollar">Enforce <code>$...$</code></label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="inlineOption" id="optionInlineParen" value="toParen">
+        <label class="form-check-label" for="optionInlineParen">Enforce <code>\(...\)</code></label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="inlineOption" id="optionInlineMath" value="toMath">
+        <label class="form-check-label" for="optionInlineMath">Enforce <code>\begin{math}...\end{math}</code></label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="inlineOption" id="optionInlineNone" value="none" checked>
+        <label class="form-check-label" for="optionInlineNone">Leave as is</label>
+      </div>
+    </div>
     <p class="fw-bold">Regarding equation references:</p>
     <div class="mb-3">
       <div class="form-check form-check-inline">

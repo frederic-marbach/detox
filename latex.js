@@ -123,6 +123,85 @@ function transformDisplay(source, newOpen, newClose) {
 }
 
 /**
+ * Replaces LaTeX inline math delimiters with new specified delimiters.
+ * Skips $$ display math blocks to avoid treating their $ as inline delimiters.
+ *
+ * @param {string} source - The LaTeX source string.
+ * @param {string} newOpen - The new opening delimiter.
+ * @param {string} newClose - The new closing delimiter.
+ * @returns {string} - The modified string.
+ */
+function transformInline(source, newOpen, newClose) {
+    const patterns = [
+        { start: '\\(', end: '\\)' },
+        { start: '\\begin{math}', end: '\\end{math}' },
+    ];
+    let result = '';
+    let i = 0;
+    while (i < source.length) {
+        let matched = false;
+
+        // Skip $$ display math blocks to avoid false matches on their $ chars
+        if (source.startsWith('$$', i)) {
+            result += '$$';
+            i += 2;
+            while (i < source.length && !source.startsWith('$$', i)) {
+                result += source[i];
+                i++;
+            }
+            if (source.startsWith('$$', i)) {
+                result += '$$';
+                i += 2;
+            }
+            matched = true;
+        }
+
+        // Single $ (not $$) — inline math delimiter
+        if (!matched && source[i] === '$') {
+            result += newOpen;
+            i++;
+            let content = '';
+            while (i < source.length && source[i] !== '$') {
+                content += source[i];
+                i++;
+            }
+            if (i < source.length) {
+                i++; // skip closing $
+            }
+            result += content + newClose;
+            matched = true;
+        }
+
+        // \(...\) and \begin{math}...\end{math}
+        if (!matched) {
+            for (const { start, end } of patterns) {
+                if (source.startsWith(start, i)) {
+                    result += newOpen;
+                    i += start.length;
+                    let content = '';
+                    while (i < source.length && !source.startsWith(end, i)) {
+                        content += source[i];
+                        i++;
+                    }
+                    if (source.startsWith(end, i)) {
+                        i += end.length;
+                    }
+                    result += content + newClose;
+                    matched = true;
+                    break;
+                }
+            }
+        }
+
+        if (!matched) {
+            result += source[i];
+            i++;
+        }
+    }
+    return result;
+}
+
+/**
  * Auto-indents LaTeX source code by calling the external function.
  *
  * @param {string} source - The LaTeX source string.
@@ -138,5 +217,6 @@ window.Latex = {
     transformEqToParenRef,
     transformParenRefToEq,
     transformDisplay,
+    transformInline,
     autoIndent
 };
