@@ -212,11 +212,23 @@ function autoIndent(source) {
     return window.Indent.autoIndent(source);
 }
 
+/**
+ * Removes the star from all starred LaTeX environments, e.g.
+ * \begin{equation*} -> \begin{equation}, \end{align*} -> \end{align}.
+ *
+ * @param {string} source - The LaTeX source string.
+ * @returns {string} - The modified string.
+ */
+function removeEnvStars(source) {
+    return source.replace(/\\(begin|end)\{([^}]+)\*\}/g, '\\$1{$2}');
+}
+
 // Expose functions to the global window object
 window.Latex = {
     transformEqToParenRef,
     transformParenRefToEq,
     transformDisplay,
     transformInline,
-    autoIndent
+    autoIndent,
+    removeEnvStars
 };

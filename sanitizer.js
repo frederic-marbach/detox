@@ -75,6 +75,12 @@ sanitizeBtn.addEventListener('click', () => {
     text = window.Latex.autoIndent(text);
   }
 
+  // Apply environment numbering if requested (last step)
+  const numberingOption = document.querySelector('input[name="numberingOption"]:checked').value;
+  if (numberingOption === 'numberAll') {
+    text = window.Latex.removeEnvStars(text);
+  }
+
   transformedText = text;
   transformMsg.classList.remove('d-none');
   transformMsg.textContent = 'Transformation complete!';
